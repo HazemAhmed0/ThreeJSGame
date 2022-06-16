@@ -282,7 +282,7 @@ function cameraPositionLimit() {
         AudioLoader.load('sound/boat.mp3', function (buffer) {
           Sound.setBuffer(buffer);
           Sound.setLoop(true);
-          Sound.setVolume(1.5);
+          Sound.setVolume(4.5);
           Sound.play();
         });
 
