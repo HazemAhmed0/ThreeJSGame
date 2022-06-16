@@ -282,7 +282,7 @@ function cameraPositionLimit() {
         AudioLoader.load('sound/boat.mp3', function (buffer) {
           Sound.setBuffer(buffer);
           Sound.setLoop(true);
-          Sound.setVolume(4.5);
+          Sound.setVolume(1.5);
           Sound.play();
         });
 
@@ -328,10 +328,10 @@ function cameraPositionLimit() {
                 boat.speed.vel = -4.5;
             }
             if (e.key == 'd'){
-                boat.speed.rot = -0.1;
+                boat.speed.rot = -0.02;
             }
             if (e.key == 'a'){
-                boat.speed.rot = 0.1;
+                boat.speed.rot = 0.02;
             }
         })
         window.addEventListener('keyup', (e) =>{
