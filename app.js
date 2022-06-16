@@ -328,10 +328,10 @@ function cameraPositionLimit() {
                 boat.speed.vel = -4.5;
             }
             if (e.key == 'd'){
-                boat.speed.rot = -0.02;
+                boat.speed.rot = -0.1;
             }
             if (e.key == 'a'){
-                boat.speed.rot = 0.02;
+                boat.speed.rot = 0.1;
             }
         })
         window.addEventListener('keyup', (e) =>{
