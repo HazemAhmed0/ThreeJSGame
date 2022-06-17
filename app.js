@@ -15,7 +15,6 @@ import * as THREE from 'https://cdn.skypack.dev/three@0.136';
     let cloudCount = 120;
     let materials= [];
     let Parameters;
-  
 
     class Boat{
         constructor(){
@@ -37,7 +36,6 @@ import * as THREE from 'https://cdn.skypack.dev/three@0.136';
             if(this.boat){
             this.boat.translateZ(this.speed.vel);
             this.boat.rotation.y += this.speed.rot;
-            console.log(this.boat.position)
             }
         }
 
@@ -121,22 +119,22 @@ function cameraPositionLimit() {
   }
 
   function BoatPositionLimit() {
-    if (Boatscene){
-    if (Boatscene.position.x > SCALE / 4) {
-        Boatscene.position.x = SCALE / 4;
-    }
-  
-    if (Boatscene.position.x < -SCALE / 4) {
-        Boatscene.position.x = -SCALE / 4;
-    }
-  
-    if (Boatscene.position.z > SCALE / 4) {
-        Boatscene.position.z = SCALE / 4;
-    }
-  
-    if (Boatscene.position.z < -SCALE / 4) {
-        Boatscene.position.z = -SCALE / 4;
-    }
+    if (Boatscene && Islandscene){
+      if (Boatscene.position.x > SCALE / 4) {
+          Boatscene.position.x = SCALE / 4;
+      }
+    
+      if (Boatscene.position.x < -SCALE / 4) {
+          Boatscene.position.x = -SCALE / 4;
+      }
+    
+      if (Boatscene.position.z > SCALE / 4) {
+          Boatscene.position.z = SCALE / 4;
+      }
+    
+      if (Boatscene.position.z < -SCALE / 4) {
+          Boatscene.position.z = -SCALE / 4;
+      }
       let xd = Islandscene.position.x - Boatscene.position.x
       let zd = Islandscene.position.z - Boatscene.position.z
       let theta =  Math.atan(zd/xd)
@@ -192,9 +190,9 @@ function cameraPositionLimit() {
         // sun light
 
         sun = new THREE.Vector3();
-
-        // rain
-        const Geometry = new THREE.BufferGeometry();
+        // 
+        
+				const Geometry = new THREE.BufferGeometry();
 				const vertices = [];
 
 				const textureLoader = new THREE.TextureLoader();
@@ -239,8 +237,9 @@ function cameraPositionLimit() {
 					scene.add( particles );
 
 				}
-        // Water
 
+
+        
         const waterGeometry = new THREE.PlaneGeometry( 100000, 100000 );
 
         water = new Water(
@@ -248,8 +247,8 @@ function cameraPositionLimit() {
             {
                 textureWidth: 512,
                 textureHeight: 512,
-                waterNormals: new THREE.TextureLoader().load( 'assets/water.jpg', function ( texture ) {
-
+                waterNormals: new THREE.TextureLoader().load( 'assets/waternormals.jpg', function ( texture ) {
+                  
                     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
 
                 } ),
@@ -379,10 +378,10 @@ function cameraPositionLimit() {
         window.addEventListener( 'resize', onWindowResize );
         window.addEventListener('keydown', function(e){
             if (e.key == 'w'){
-                boat.speed.vel = 4.5;
+                boat.speed.vel = 20;
             }
            if (e.key == 's'){
-                boat.speed.vel = -4.5;
+                boat.speed.vel = -20;
             }
             if (e.key == 'd'){
                 boat.speed.rot = -0.02;
@@ -405,7 +404,7 @@ function cameraPositionLimit() {
             boat.speed.rot = 0.0;
         }
         })
-    }
+      }
 
     function onWindowResize() {
 
@@ -423,12 +422,13 @@ function cameraPositionLimit() {
     }
 
     function render() {
-
+        const time = Date.now() * 0.00005;
         BoatPositionLimit();
         cameraPositionLimit();
         water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
         animateClouds(cloudsList);
-        for ( let i = 0; i < scene.children.length; i ++ ) {
+        
+				for ( let i = 0; i < scene.children.length; i ++ ) {
 
 					const object = scene.children[ i ];
 
@@ -448,6 +448,7 @@ function cameraPositionLimit() {
 					materials[ i ].color.setHSL( h, color[ 1 ], color[ 2 ] );
 
 				}
+
         renderer.render( scene, camera );
 
     }
