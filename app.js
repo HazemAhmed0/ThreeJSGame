@@ -13,6 +13,8 @@ import * as THREE from 'https://cdn.skypack.dev/three@0.136';
     var Boatscene, Islandscene;
     let cloud, cloudsList = [];
     let cloudCount = 120;
+    let materials= [];
+    let Parameters;
   
 
     class Boat{
@@ -135,6 +137,16 @@ function cameraPositionLimit() {
     if (Boatscene.position.z < -SCALE / 4) {
         Boatscene.position.z = -SCALE / 4;
     }
+      let xd = Islandscene.position.x - Boatscene.position.x
+      let zd = Islandscene.position.z - Boatscene.position.z
+      let theta =  Math.atan(zd/xd)
+      let d = Math.sqrt(xd*xd + zd*zd)
+      if (d<7500) {
+        Boatscene.position.x = Math.cos(theta)*7500;
+      }
+      if (d<7500) {
+        Boatscene.position.z = Math.sin(theta)*7500;
+      }
 
       } 
      }
@@ -181,7 +193,52 @@ function cameraPositionLimit() {
 
         sun = new THREE.Vector3();
 
+        // rain
+        const Geometry = new THREE.BufferGeometry();
+				const vertices = [];
 
+				const textureLoader = new THREE.TextureLoader();
+
+				const rain = textureLoader.load( 'assets/snow.png' );
+        
+
+        for ( let i = 0; i < SCALE; i ++ ) {
+
+					const x = Math.random() * SCALE - SCALE/2;
+					const y = Math.random() * SCALE - SCALE/2;
+					const z = Math.random() * SCALE - SCALE/2;
+
+					vertices.push( x, y, z );
+
+				}
+        Geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+        
+				Parameters = [
+					[[ 1.0, 0.2, 0.5 ], rain, SCALE/1000 ],
+					[[ 0.95, 0.1, 0.5 ], rain, SCALE/1250 ],
+					[[ 0.90, 0.05, 0.5 ], rain, SCALE/1300 ],
+					[[ 0.85, 0, 0.5 ], rain, 8 ],
+					[[ 0.80, 0, 0.5 ], rain, 5 ]
+				];
+        
+				for ( let i = 0; i < Parameters.length; i ++ ) {
+
+					const color = Parameters[ i ][ 0 ];
+					const sprite = Parameters[ i ][ 1 ];
+					const size = Parameters[ i ][ 2 ];
+
+					materials[ i ] = new THREE.PointsMaterial( { size: size, map: sprite, blending: THREE.AdditiveBlending, depthTest: false, transparent: true } );
+					materials[ i ].color.setHSL( color[ 0 ], color[ 1 ], color[ 2 ] );
+
+					const particles = new THREE.Points( Geometry, materials[ i ] );
+
+					particles.rotation.x = Math.random() * 6;
+					particles.rotation.y = Math.random() * 6;
+					particles.rotation.z = Math.random() * 6;
+
+					scene.add( particles );
+
+				}
         // Water
 
         const waterGeometry = new THREE.PlaneGeometry( 100000, 100000 );
@@ -335,7 +392,18 @@ function cameraPositionLimit() {
             }
         })
         window.addEventListener('keyup', (e) =>{
-                boat.stop();
+          if (e.key == 'w'){
+            boat.speed.vel = 0;
+        }
+          if (e.key == 's'){
+            boat.speed.vel = 0;
+        }
+        if (e.key == 'd'){
+          boat.speed.rot = 0.0;
+        }
+        if (e.key == 'a'){
+            boat.speed.rot = 0.0;
+        }
         })
     }
 
@@ -360,6 +428,26 @@ function cameraPositionLimit() {
         cameraPositionLimit();
         water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
         animateClouds(cloudsList);
+        for ( let i = 0; i < scene.children.length; i ++ ) {
+
+					const object = scene.children[ i ];
+
+					if ( object instanceof THREE.Points ) {
+
+						object.rotation.y = time * ( i < 4 ? i + 1 : - ( i + 1 ) );
+
+					}
+
+				}
+
+				for ( let i = 0; i < materials.length; i ++ ) {
+
+					const color = Parameters[ i ][ 0 ];
+
+					const h = ( 360 * ( color[ 0 ] + time ) % 360 ) / 360;
+					materials[ i ].color.setHSL( h, color[ 1 ], color[ 2 ] );
+
+				}
         renderer.render( scene, camera );
 
     }
